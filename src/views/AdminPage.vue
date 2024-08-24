@@ -32,6 +32,7 @@
         @close="closeChangeStatusModal"
         @confirm="attendRequest"
         @cancel="refuseRequest"
+        @delete="deleteSongRequest"
       />
     </template>
   </BaseLayout>
@@ -110,6 +111,14 @@ export default {
       await updateDoc(doc(db, "requests", this.songSelected), {
         status: "refused",
       }).finally(() => (this.loading = false));
+    },
+    async deleteSongRequest() {
+      this.closeChangeStatusModal();
+      this.loading = true;
+
+      await deleteDoc(doc(db, "requests", this.songSelected)).finally(
+        () => (this.loading = false)
+      );
     },
     async clearCollection() {
       this.loading = true;

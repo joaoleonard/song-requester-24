@@ -11,13 +11,18 @@
 
         <div class="modal-body">
           <div class="status-container">
-            <button class="action-button" @click="onConfirm">
-              Aceitar
-            </button>
+            <button class="action-button" @click="onConfirm">Aceitar</button>
             <button class="action-button cancel-button" @click="onCancel">
               Recusar
             </button>
           </div>
+          
+        </div>
+
+        <div class="modal-footer">
+          <button class="action-button delete-song-button" @click="onDeleteSong">
+            Excluir pedido
+          </button>
         </div>
       </div>
     </div>
@@ -30,7 +35,7 @@ export default {
   components: { SvgCloseX },
   name: "ChangeStatusModal",
   props: {
-    songRequestedId: String, 
+    songRequestedId: String,
   },
   methods: {
     close() {
@@ -41,6 +46,9 @@ export default {
     },
     onCancel() {
       this.$emit("cancel", this.songRequestedId);
+    },
+    onDeleteSong() {
+      this.$emit("delete", this.songRequestedId);
     },
   },
 };
@@ -99,7 +107,6 @@ p {
 
 .modal-body {
   position: relative;
-  padding: 0 25px;
 }
 
 .btn-close {
@@ -128,7 +135,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 25px !important;
+  padding: 25px 25px 0 25px;
 }
 
 .modal-footer {
@@ -160,6 +167,11 @@ button {
 
 .cancel-button {
   background-color: #f44;
+}
+
+.delete-song-button {
+  background-color: #f44;
+  width: 100%;
 }
 
 .modal-fade-enter-from,
