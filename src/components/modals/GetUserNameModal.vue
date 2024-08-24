@@ -10,7 +10,7 @@
         <div class="modal-body">
           <input
             class="request-input"
-            placeholder="Digite aqui seu pedido..."
+            placeholder="Digite aqui seu nome"
             v-model="userName"
           />
         </div>

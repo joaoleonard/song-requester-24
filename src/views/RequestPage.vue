@@ -91,7 +91,7 @@ export default {
     },
   },
   mounted() {
-    if (!this.userName) {
+    if (!localStorage.getItem("userName")) {
       this.showGetUserNameModal = true;
     }
   },
