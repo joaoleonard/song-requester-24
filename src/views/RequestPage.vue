@@ -89,9 +89,6 @@ export default {
     songsRequested() {
       return this.requestsCollection;
     },
-    userName() {
-      return localStorage.getItem("userName") || "";
-    },
   },
   mounted() {
     if (!this.userName) {
@@ -119,7 +116,7 @@ export default {
 
       addDoc(collection(db, "requests"), {
         user_id: 1,
-        user_name: this.userName,
+        user_name: localStorage.getItem("userName") || "",
         song_artist: songRequested,
         status: "pending",
         created_at: new Date(),

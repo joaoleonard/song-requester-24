@@ -23,7 +23,7 @@
             @click="openChangeStatusModal(song.id)"
           />
         </div>
-        <p v-else>Você ainda não fez nenhum pedido</p>
+        <p v-else>Nenhum pedido de música ainda</p>
       </div>
     </template>
     <template #modals>
