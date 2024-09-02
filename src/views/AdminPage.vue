@@ -4,7 +4,7 @@
       <button
         class="open-modal-request-button"
         type="submit"
-        @click="clearCollection"
+        @click="() => (showEndShowModal = true)"
         v-if="!loading"
       >
         Encerrar show
@@ -20,7 +20,7 @@
             :key="song.id"
             :songRequest="song"
             :orderNumber="index + 1"
-            @click="openChangeStatusModal(song.id)"
+            @click="openChangeStatusModal(song)"
           />
         </div>
         <p v-else>Nenhum pedido de música ainda</p>
@@ -33,6 +33,13 @@
         @confirm="attendRequest"
         @cancel="refuseRequest"
         @delete="deleteSongRequest"
+        :songSelected="songSelected"
+      />
+      <EndShowModal
+        v-show="showEndShowModal"
+        @close="() => (showEndShowModal = false)"
+        @confirm="clearCollection"
+        @cancel="() => (showEndShowModal = false)"
       />
     </template>
   </BaseLayout>
@@ -54,6 +61,7 @@ import AddRequestModal from "../components/modals/AddRequestModal.vue";
 import DeleteRequestModal from "../components/modals/DeleteRequestModal.vue";
 import ChangeStatusModal from "../components/modals/ChangeStatusModal.vue";
 import { useCollection } from "vuefire";
+import EndShowModal from "../components/modals/EndShowModal.vue";
 
 export default {
   components: {
@@ -62,15 +70,17 @@ export default {
     DeleteRequestModal,
     BaseLayout,
     ChangeStatusModal,
+    EndShowModal
   },
   name: "AdminPage",
   data() {
     return {
       showChangeStatusModal: false,
-      songSelected: "",
+      showEndShowModal: false,
+      songSelected: {},
       loading: false,
       requestsCollection: useCollection(
-        query(collection(db, "requests"), orderBy("created_at", "asc")),
+        query(collection(db, "requests"), orderBy("created_at", "desc")),
         { ssrKey: "requests" }
       ),
     };
@@ -89,9 +99,9 @@ export default {
     },
   },
   methods: {
-    openChangeStatusModal(songRequestedId) {
+    openChangeStatusModal(songRequested) {
       this.showChangeStatusModal = true;
-      this.songSelected = songRequestedId;
+      this.songSelected = songRequested;
     },
     closeChangeStatusModal() {
       this.showChangeStatusModal = false;
@@ -100,7 +110,7 @@ export default {
       this.closeChangeStatusModal();
       this.loading = true;
 
-      await updateDoc(doc(db, "requests", this.songSelected), {
+      await updateDoc(doc(db, "requests", this.songSelected.id), {
         status: "attended",
       }).finally(() => (this.loading = false));
     },
@@ -108,7 +118,7 @@ export default {
       this.closeChangeStatusModal();
       this.loading = true;
 
-      await updateDoc(doc(db, "requests", this.songSelected), {
+      await updateDoc(doc(db, "requests", this.songSelected.id), {
         status: "refused",
       }).finally(() => (this.loading = false));
     },
@@ -116,11 +126,12 @@ export default {
       this.closeChangeStatusModal();
       this.loading = true;
 
-      await deleteDoc(doc(db, "requests", this.songSelected)).finally(
+      await deleteDoc(doc(db, "requests", this.songSelected.id)).finally(
         () => (this.loading = false)
       );
     },
     async clearCollection() {
+      this.showEndShowModal = false;
       this.loading = true;
 
       const totalSongs = this.songsLength;

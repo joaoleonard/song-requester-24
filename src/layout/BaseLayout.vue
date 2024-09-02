@@ -5,7 +5,7 @@
   <main>
     <slot name="body" />
   </main>
-  <footer>Música para casamentos, restaurantes e eventos em geral</footer>
+  <footer v-show="!admin">Música para casamentos, restaurantes e eventos em geral</footer>
   <slot name="modals" />
 </template>
 

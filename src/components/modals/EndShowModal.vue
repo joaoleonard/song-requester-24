@@ -3,29 +3,26 @@
     <div class="modal-backdrop" @click="close">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2 class="title">{{ songSelected.user_name }}</h2>
+          <h2 class="title">Encerrar show!</h2>
           <button @click="close" class="btn-close">
             <SvgCloseX />
           </button>
         </div>
 
         <div class="modal-body">
-          <p>{{songSelected.song_artist}}</p>
-          <p v-show="!!songSelected.song_comment" class="comment">{{songSelected.song_comment}}</p>
+          <p>Ao encerrar o show, todos os pedidos serão excluídos.<br>Deseja realmente fazer isso?</p>
         </div>
 
-        <div class="modal-footer">
-          <div class="status-container">
-            <button class="action-button" @click="onConfirm">Aceitar</button>
+        <slot name="footer">
+          <div class="modal-footer">
             <button class="action-button cancel-button" @click="onCancel">
-              Recusar
+              Cancelar
+            </button>
+            <button class="action-button" @click="onConfirm">
+              Confirmar
             </button>
           </div>
-
-          <button class="action-button delete-song-button" @click="onDeleteSong">
-            Excluir pedido
-          </button>
-        </div>
+        </slot>
       </div>
     </div>
   </transition>
@@ -35,10 +32,7 @@
 import SvgCloseX from "../SvgCloseX.vue";
 export default {
   components: { SvgCloseX },
-  name: "ChangeStatusModal",
-  props: {
-    songSelected: Object,
-  },
+  name: "DeleteRequestModal",
   methods: {
     close() {
       this.$emit("close");
@@ -47,10 +41,7 @@ export default {
       this.$emit("confirm");
     },
     onCancel() {
-      this.$emit("cancel");
-    },
-    onDeleteSong() {
-      this.$emit("delete");
+      this.close();
     },
   },
 };
@@ -93,13 +84,9 @@ export default {
 
 p {
   color: #545454;
-  font-size: 1.3rem;
   font-weight: 600;
   font-family: "Playfair Display", sans-serif;
-}
-
-.comment {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
 .modal-header {
@@ -139,18 +126,11 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.status-container {
+.modal-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-}
-
-.modal-footer {
-  display: flex;
-  flex-direction: column;
   padding: 25px !important;
-  gap: 1rem;
 }
 
 .action-button {
@@ -159,7 +139,7 @@ button {
   background: initial;
   background-color: #9de19a;
   color: #fff;
-  font-size: 1.3em;
+  font-size: 1em;
   padding: 0.625em 1.1em;
   display: inline-block;
   font-weight: 500;
@@ -175,11 +155,6 @@ button {
 
 .cancel-button {
   background-color: #f44;
-}
-
-.delete-song-button {
-  background-color: #f44;
-  width: 100%;
 }
 
 .modal-fade-enter-from,

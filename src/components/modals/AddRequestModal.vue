@@ -4,18 +4,31 @@
       <div class="modal" @click.stop>
         <div class="modal-header">
           <h2 class="title">Peça já!</h2>
-          <p>Escolha agora sua música ou artista favorito</p>
           <button @click="close" class="btn-close">
             <SvgCloseX />
           </button>
         </div>
 
         <div class="modal-body">
-          <input
-            class="request-input"
-            placeholder="Digite aqui seu pedido..."
-            v-model="songRequest"
-          />
+          <div class="form-input">
+            <label>Escolha agora sua música ou artista favorito *</label>
+            <input
+              class="request-input"
+              placeholder="Digite aqui seu pedido..."
+              v-model="songRequest"
+            />
+          </div>
+
+          <div class="form-input">
+            <label for="request-description">Comentário do pedido</label>
+            <textarea
+              name="request-description"
+              id="request-description"
+              class="request-description"
+              placeholder="Campo opcional"
+              v-model="songRequestComment"
+            ></textarea>
+          </div>
         </div>
 
         <slot name="footer">
@@ -23,7 +36,13 @@
             <button class="action-button cancel-button" @click="onCancel">
               Cancelar
             </button>
-            <button class="action-button" @click="onConfirm">
+            <button
+              :class="`action-button ${
+                buttonDisabled ? 'disabled-button' : ''
+              }`"
+              @click="onConfirm"
+              :disabled="buttonDisabled"
+            >
               Enviar pedido
             </button>
           </div>
@@ -41,15 +60,28 @@ export default {
   data() {
     return {
       songRequest: "",
+      songRequestComment: "",
+      buttonDisabled: true,
     };
+  },
+  watch: {
+    songRequest(newValue, _oldValue) {
+      if (newValue.length > 0) {
+        this.buttonDisabled = false;
+
+        return;
+      }
+      this.buttonDisabled = true;
+    },
   },
   methods: {
     close() {
       this.$emit("close");
     },
     onConfirm() {
-      this.$emit("confirm", this.songRequest);
+      this.$emit("confirm", this.songRequest, this.songRequestComment);
       this.songRequest = "";
+      this.songRequestComment = "";
     },
     onCancel() {
       this.close();
@@ -93,10 +125,16 @@ export default {
   font-family: "Playfair Display", sans-serif;
 }
 
-p {
+p,
+label {
   color: #545454;
   font-weight: 600;
   font-family: "Playfair Display", sans-serif;
+}
+
+.form-input {
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .modal-header {
@@ -112,7 +150,6 @@ p {
 .modal-body {
   position: relative;
   padding: 0 25px;
-  margin-bottom: 20px;
 }
 
 .btn-close {
@@ -148,6 +185,16 @@ input {
   width: 90%;
 }
 
+.request-description {
+  border: 1px solid #aaa;
+  font-size: 1.2rem;
+  font-family: inherit;
+  color: #545454;
+  padding: 15px;
+  border-radius: 10px;
+  width: 90%;
+}
+
 .modal-footer {
   display: flex;
   align-items: center;
@@ -173,6 +220,10 @@ input {
 
 .action-button:focus {
   background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+.disabled-button {
+  opacity: 0.5;
 }
 
 .cancel-button {

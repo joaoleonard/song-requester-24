@@ -109,7 +109,7 @@ export default {
     closeDeleteRequestModal() {
       this.showDeleteRequestModal = false;
     },
-    addSongRequest(songRequested) {
+    addSongRequest(songRequested, songRequestedComment) {
       this.closeAddRequestModal();
 
       this.loading = true;
@@ -118,6 +118,7 @@ export default {
         user_id: 1,
         user_name: localStorage.getItem("userName") || "",
         song_artist: songRequested,
+        song_comment: songRequestedComment,
         status: "pending",
         created_at: new Date(),
       }).then(() => (this.loading = false));
