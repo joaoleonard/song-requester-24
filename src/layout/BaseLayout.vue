@@ -56,6 +56,7 @@ main {
   justify-content: center;
   width: 100vw;
   margin-top: 3rem;
+  padding-bottom: 75px;
 }
 
 footer {

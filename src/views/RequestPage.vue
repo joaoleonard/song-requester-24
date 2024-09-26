@@ -1,32 +1,42 @@
 <template>
   <BaseLayout>
     <template #body>
-      <button
-        class="open-modal-request-button"
-        type="submit"
-        @click="openAddRequestModal"
-        v-if="!loading"
-      >
-        Fazer pedido
-      </button>
-      <div style="width: 90%; padding-bottom: 70px">
-        <div v-if="loading" class="loading">
-          <p>Carregando...</p>
-        </div>
-        <div v-else-if="songsRequested.length">
-          <p>Lista de pedidos</p>
-          <RequestItem
-            v-for="(song, index) in songsRequested"
-            :key="song.id"
-            :songRequest="song"
-            :orderNumber="index + 1"
-            @click="openDeleteRequestModal(song.id)"
-          />
-        </div>
-        <p v-else>Você ainda não fez nenhum pedido</p>
+      <div v-if="!musicianData || loading">
+        <p>Carregando...</p>
       </div>
+      <template v-else-if="allMusicians && !musicianIsLive">
+        <h1>O show já vai começar!</h1>
+        <p>Enquanto isso, nos siga nas redes sociais<br>para não perder nada</p>
+        <InstagramCard @click="goToInstagram"/>
+      </template>
+      <template v-else>
+        <button
+          class="open-modal-request-button"
+          type="submit"
+          @click="openAddRequestModal"
+          v-if="!loading"
+        >
+          Fazer pedido
+        </button>
+        <div style="width: 90%; padding-bottom: 70px">
+          <div v-if="loading" class="loading">
+            <p>Carregando...</p>
+          </div>
+          <div v-else-if="songsRequested.length">
+            <p>Lista de pedidos</p>
+            <RequestItem
+              v-for="(song, index) in songsRequested"
+              :key="song.id"
+              :songRequest="song"
+              :orderNumber="index + 1"
+              @click="openDeleteRequestModal(song.id)"
+            />
+          </div>
+          <p v-else>Você ainda não fez nenhum pedido</p>
+        </div>
+      </template>
     </template>
-    
+
     <template #modals>
       <AddRequestModal
         v-show="showAddRequestModal"
@@ -38,10 +48,7 @@
         @close="closeDeleteRequestModal"
         @confirm="deleteSongRequest"
       />
-      <GetUserNameModal
-        v-show="showGetUserNameModal"
-        @confirm="getUserName"
-        />
+      <GetUserNameModal v-show="showGetUserNameModal" @confirm="getUserName" />
     </template>
   </BaseLayout>
 </template>
@@ -61,7 +68,9 @@ import AddRequestModal from "../components/modals/AddRequestModal.vue";
 import DeleteRequestModal from "../components/modals/DeleteRequestModal.vue";
 import { useCollection } from "vuefire";
 import BaseLayout from "../layout/BaseLayout.vue";
-import GetUserNameModal from '../components/modals/GetUserNameModal.vue';
+import GetUserNameModal from "../components/modals/GetUserNameModal.vue";
+import { toRaw } from "vue";
+import InstagramCard from "../components/InstagramCard.vue";
 
 export default {
   components: {
@@ -70,6 +79,7 @@ export default {
     DeleteRequestModal,
     BaseLayout,
     GetUserNameModal,
+    InstagramCard
   },
   name: "RequestPage",
   data() {
@@ -83,11 +93,20 @@ export default {
         query(collection(db, "requests"), orderBy("created_at", "desc")),
         { ssrKey: "requests" }
       ),
+      allMusicians: useCollection(query(collection(db, "musicians")), {
+        ssrKey: "musicians",
+      }),
     };
   },
   computed: {
     songsRequested() {
       return this.requestsCollection;
+    },
+    musicianData() {
+      return toRaw(this.allMusicians.filter((musician) => musician.id === "Xt6beIx05Q6nFzpREY9q")[0]);
+    },
+    musicianIsLive() {
+      return this.musicianData.is_live;
     },
   },
   mounted() {
@@ -98,6 +117,9 @@ export default {
   methods: {
     openAddRequestModal() {
       this.showAddRequestModal = true;
+    },
+    goToInstagram() {
+      window.open("https://www.instagram.com/joaoeleticiamusica/");
     },
     closeAddRequestModal() {
       this.showAddRequestModal = false;
@@ -141,6 +163,12 @@ export default {
 </script>
 
 <style scoped>
+h1 {
+  font-family: "Playfair Display", sans-serif;
+  font-size: 2rem;
+  margin-top: 0;
+}
+
 p {
   font-family: inherit;
   font-size: 1.2rem;
