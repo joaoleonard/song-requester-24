@@ -5,11 +5,15 @@
   <main>
     <slot name="body" />
   </main>
-  <footer v-show="!admin">Música para casamentos, restaurantes e eventos em geral</footer>
+  <footer v-show="!admin">
+    Música para casamentos, restaurantes e eventos em geral
+  </footer>
   <slot name="modals" />
 </template>
 
 <script>
+import { goToInstagram, goToWhatsapp } from "../utils";
+
 export default {
   name: "BaseLayout",
   props: {
@@ -22,6 +26,14 @@ export default {
     return {
       themeColor: this.admin ? "#74c476" : "#4b3c05",
     };
+  },
+  methods: {
+    goToInstagram() {
+      goToInstagram();
+    },
+    goToWhatsapp() {
+      goToWhatsapp();
+    },
   },
 };
 </script>

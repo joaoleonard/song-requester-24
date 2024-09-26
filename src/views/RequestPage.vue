@@ -6,8 +6,10 @@
       </div>
       <template v-else-if="allMusicians && !musicianIsLive">
         <h1>O show já vai começar!</h1>
-        <p>Enquanto isso, nos siga nas redes sociais<br>para não perder nada</p>
-        <InstagramCard @click="goToInstagram"/>
+        <p>
+          Enquanto isso, nos siga nas redes sociais<br />para não perder nada
+        </p>
+        <InstagramCard @click="goToInstagram" />
       </template>
       <template v-else>
         <button
@@ -18,7 +20,7 @@
         >
           Fazer pedido
         </button>
-        <div style="width: 90%; padding-bottom: 70px">
+        <div style="width: 90%">
           <div v-if="loading" class="loading">
             <p>Carregando...</p>
           </div>
@@ -35,6 +37,23 @@
           <p v-else>Você ainda não fez nenhum pedido</p>
         </div>
       </template>
+
+      <div class="contacts" v-if="!admin">
+        <div class="divider" />
+        <p class="contact-text">Contatos</p>
+        <div class="contact" @click="goToWhatsapp">
+          <i class="pi pi-whatsapp" style="font-size: 1.5rem"></i>
+          <p class="contact-info">(43) 9 9950-8659</p>
+        </div>
+        <div class="contact" @click="goToInstagram">
+          <i class="pi pi-instagram" style="font-size: 1.5rem"></i>
+          <p class="contact-info">@joaoeleticiamusica</p>
+        </div>
+        <div class="contact">
+          <i class="pi pi-envelope" style="font-size: 1.5rem"></i>
+          <p class="contact-info">joaoeleticiamusica@gmail.com</p>
+        </div>
+      </div>
     </template>
 
     <template #modals>
@@ -71,6 +90,7 @@ import BaseLayout from "../layout/BaseLayout.vue";
 import GetUserNameModal from "../components/modals/GetUserNameModal.vue";
 import { toRaw } from "vue";
 import InstagramCard from "../components/InstagramCard.vue";
+import { goToInstagram } from "../utils/index.js";
 
 export default {
   components: {
@@ -79,7 +99,7 @@ export default {
     DeleteRequestModal,
     BaseLayout,
     GetUserNameModal,
-    InstagramCard
+    InstagramCard,
   },
   name: "RequestPage",
   data() {
@@ -103,7 +123,11 @@ export default {
       return this.requestsCollection;
     },
     musicianData() {
-      return toRaw(this.allMusicians.filter((musician) => musician.id === "Xt6beIx05Q6nFzpREY9q")[0]);
+      return toRaw(
+        this.allMusicians.filter(
+          (musician) => musician.id === "Xt6beIx05Q6nFzpREY9q"
+        )[0]
+      );
     },
     musicianIsLive() {
       return this.musicianData.is_live;
@@ -119,7 +143,7 @@ export default {
       this.showAddRequestModal = true;
     },
     goToInstagram() {
-      window.open("https://www.instagram.com/joaoeleticiamusica/");
+      goToInstagram();
     },
     closeAddRequestModal() {
       this.showAddRequestModal = false;
@@ -200,6 +224,48 @@ input {
   -webkit-tap-highlight-color: transparent;
   font-size: 1.3rem;
   width: 80%;
+}
+
+
+.contacts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20px;
+  bottom: 0;
+  left: 0;
+  margin-top: auto;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.contact-text {
+  font-family: "Playfair Display", sans-serif;
+  font-size: 1.5rem;
+  margin: 10px;
+  font-weight: 500;
+}
+
+.contact-info {
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 1.2rem;
+  margin: 5px;
+  font-weight: 500;
+}
+
+.divider {
+  width: 90%;
+  height: 1px;
+  background-color: #eaeaea;
+  margin-top: 20px;
 }
 
 button,
